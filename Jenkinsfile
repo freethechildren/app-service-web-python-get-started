@@ -49,7 +49,7 @@ pipeline {
         script {
           echo "Recording commit ref"
           sh "echo ${GIT_COMMIT} > .ref"
-          docker.withRegistry("$DOCKER_REGISTRY_ADDR", 'we-docker-registry-dev') {
+          docker.withRegistry("$DOCKER_REGISTRY_ADDR", 'platform-docker-registry') {
             app = docker.build(env.DOCKER_REPO_NAME, '-f Dockerfile .')
             app.push("${env.BUILD_TAG}")
           }
