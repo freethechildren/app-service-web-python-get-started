@@ -11,7 +11,7 @@ pipeline {
     DOCKER_REGISTRY = 'wedockerregistrydev.azurecr.io'
     DOCKER_REGISTRY_NAME = 'WeDockerRegistryDev'
     DOCKER_REGISTRY_ADDR= "https://${DOCKER_REGISTRY}"
-    DOCKER_REPO_NAME='rbc-devops/django-sample'
+    DOCKER_REPO_NAME='rbc-devops/sample-django'
     JENKINS_SP_PW = credentials('jenkins_sp_pw')
     JENKINS_SP_NAME = 'jenkins_sp'
   }
@@ -74,7 +74,7 @@ pipeline {
   post {
     success {
       office365ConnectorSend(
-        message: "Django Sample is Built Successfully",
+        message: "Sample Django app is Built Successfully",
         status: "SUCCESS",
         webhookUrl: "$PYTH_TEAMS_WEBHOOK",
         color: "6ef449"
@@ -82,7 +82,7 @@ pipeline {
     }
     failure {
       office365ConnectorSend(
-        message: "Error while building Django Sample",
+        message: "Error while building Sample Django app",
         status: "FAILURE",
         webhookUrl: "$PYTH_TEAMS_WEBHOOK",
         color: "d10815"
