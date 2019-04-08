@@ -13,6 +13,8 @@ pipeline {
     DOCKER_REGISTRY_ADDR= "https://${DOCKER_REGISTRY}"
     DOCKER_REPO_NAME='rbc-devops/sample-django'
     BUILD_TAG='latest'
+    DOCKER_REGISTRY_CREDS = credentials('platform-docker-registry')
+    DNS_NAME_LABEL = "rbc-devops-sample-dev"
     JENKINS_SP_PW = credentials('platform-docker-registry')
     JENKINS_SP_NAME = 'platform-docker-registry'
   }
@@ -57,20 +59,62 @@ pipeline {
         }
       }
     }
-    // stage('Kick off deploy to dev') {
-    //   when { expression { env.BRANCH_NAME == env.DEPLOY_BRANCH } }
-    //   steps {
-    //     build (
-    //       job: 'wetl-core-deploy-2',
-    //       parameters: [
-    //         [$class: 'StringParameterValue', name: 'target', value: "dev"],
-    //         [$class: 'StringParameterValue', name: 'image_tag', value: "$BUILD_TAG"]
-    //       ],
-    //       wait: false,
-    //       propagate: false
-    //     )
-    //   }
-    // }
+    stage("Deploy container to chosen deploy") {
+      agent {
+        docker {
+          image 'microsoft/azure-cli'
+          args '-v $HOME/.jenkins/:/tmp'
+        }
+      }
+      environment {
+        RESOURCE_GROUP = 'weorg-dev'
+        APP_NAME = "rbc-devops-sample-dev"
+
+        // env.MQ_HOST = "wetl-main-queue-dev.redis.cache.windows.net"
+        // env.MQ_PORT = '6380'
+        // env.MQ_DATABASE = '0'
+        // env.MQ_CREDS_ID = "wetl-main-queue-dev"
+        // SF_URL = 'https://we--danbox.cs62.my.salesforce.com'
+        // env.SF_CREDS_ID = "pyth_sf_danbox_creds"
+        // env.SF_TOKEN_ID = "pyth_sf_danbox_token"
+        // env.SF_DOMAIN = 'test'
+        // env.SENTRY_DSN = 'https://3d8842518bc74291840d42a501825f26@sentry.io/1404060'
+
+
+        MQ_CREDS = credentials("${MQ_CREDS_ID}")
+        SF_CREDS = credentials("${SF_CREDS_ID}")
+        SF_TOKEN = credentials("${SF_TOKEN_ID}")
+      }
+      steps {
+        script {
+          sh """
+          az login \
+            --service-principal \
+            -u http://$JENKINS_SP_NAME \
+            -p \"$JENKINS_SP_PW\" \
+            --verbose \
+            --tenant we.org
+          """
+          sh """
+          az container create  \
+            -g ${RESOURCE_GROUP} \
+            --name ${APP_NAME} \
+            --image ${DOCKER_REGISTRY}/${DOCKER_REPO_NAME}:${BUILD_TAG} \
+            --registry-username ${DOCKER_REGISTRY_CREDS_USR} \
+            --registry-password "${DOCKER_REGISTRY_CREDS_PSW}" \
+            --ip-address public \
+            --dns-name-label ${DNS_NAME_LABEL} \
+            --verbose \
+          """
+          sh """
+          az container restart \
+            --verbose \
+            -g ${RESOURCE_GROUP} \
+            --name ${APP_NAME}
+          """
+        }
+      }
+    }
   }
 
   post {
