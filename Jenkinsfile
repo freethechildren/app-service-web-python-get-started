@@ -12,6 +12,7 @@ pipeline {
     DOCKER_REGISTRY_NAME = 'WeDockerRegistryDev'
     DOCKER_REGISTRY_ADDR= "https://${DOCKER_REGISTRY}"
     DOCKER_REPO_NAME='rbc-devops/sample-django'
+    BUILD_TAG='latest'
     JENKINS_SP_PW = credentials('platform-docker-registry')
     JENKINS_SP_NAME = 'platform-docker-registry'
   }
