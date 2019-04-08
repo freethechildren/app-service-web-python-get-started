@@ -17,6 +17,8 @@ pipeline {
     DNS_NAME_LABEL = "rbc-devops-sample-dev"
     JENKINS_SP_PW = credentials('platform-docker-registry')
     JENKINS_SP_NAME = 'platform-docker-registry'
+    RESOURCE_GROUP = 'weorg-dev'
+    APP_NAME = "rbc-devops-sample-dev"
   }
 
   stages {
@@ -66,9 +68,7 @@ pipeline {
           args '-v $HOME/.jenkins/:/tmp'
         }
       }
-      environment {
-        RESOURCE_GROUP = 'weorg-dev'
-        APP_NAME = "rbc-devops-sample-dev"
+    //   environment {
 
         // env.MQ_HOST = "wetl-main-queue-dev.redis.cache.windows.net"
         // env.MQ_PORT = '6380'
@@ -81,10 +81,10 @@ pipeline {
         // env.SENTRY_DSN = 'https://3d8842518bc74291840d42a501825f26@sentry.io/1404060'
 
 
-        MQ_CREDS = credentials("${MQ_CREDS_ID}")
-        SF_CREDS = credentials("${SF_CREDS_ID}")
-        SF_TOKEN = credentials("${SF_TOKEN_ID}")
-      }
+        // MQ_CREDS = credentials("${MQ_CREDS_ID}")
+        // SF_CREDS = credentials("${SF_CREDS_ID}")
+        // SF_TOKEN = credentials("${SF_TOKEN_ID}")
+    //   }
       steps {
         script {
           sh """
