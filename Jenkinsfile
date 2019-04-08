@@ -16,7 +16,7 @@ pipeline {
     DOCKER_REGISTRY_CREDS = credentials('platform-docker-registry')
     DNS_NAME_LABEL = "rbc-devops-sample-dev"
     JENKINS_SP_PW = credentials('platform-docker-registry')
-    JENKINS_SP_NAME = 'platform-docker-registry'
+    JENKINS_SP_NAME = 'jenkins_sp'
     RESOURCE_GROUP = 'weorg-dev'
     APP_NAME = "rbc-devops-sample-dev"
   }
