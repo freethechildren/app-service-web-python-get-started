@@ -104,7 +104,7 @@ pipeline {
             --registry-password "${DOCKER_REGISTRY_CREDS_PSW}" \
             --ip-address public \
             --dns-name-label ${DNS_NAME_LABEL} \
-            --verbose \
+            --verbose
           """
           sh """
           az container restart \
