@@ -15,8 +15,10 @@ pipeline {
     BUILD_TAG='latest'
     DOCKER_REGISTRY_CREDS = credentials('platform-docker-registry')
     DNS_NAME_LABEL = "rbc-devops-sample-dev"
-    JENKINS_SP_PW = credentials('platform-docker-registry')
     JENKINS_SP_NAME = 'jenkins_sp'
+
+    
+
     RESOURCE_GROUP = 'weorg-dev'
     APP_NAME = "rbc-devops-sample-dev"
   }
@@ -68,7 +70,8 @@ pipeline {
           args '-v $HOME/.jenkins/:/tmp'
         }
       }
-    //   environment {
+      environment {
+        JENKINS_SP_PW = credentials('jenkins_sp_pw')
 
         // env.MQ_HOST = "wetl-main-queue-dev.redis.cache.windows.net"
         // env.MQ_PORT = '6380'
@@ -84,7 +87,7 @@ pipeline {
         // MQ_CREDS = credentials("${MQ_CREDS_ID}")
         // SF_CREDS = credentials("${SF_CREDS_ID}")
         // SF_TOKEN = credentials("${SF_TOKEN_ID}")
-    //   }
+      }
       steps {
         script {
           sh """
