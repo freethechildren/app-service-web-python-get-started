@@ -12,6 +12,6 @@ def hello_world():
     return 'Hello, World!'
 
 
-PORT = os.getenv('PORT', 5000)
+PORT = os.getenv('PORT', 80)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=PORT)
