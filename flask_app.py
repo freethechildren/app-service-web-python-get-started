@@ -1,15 +1,12 @@
 import logging
 import os
 import time
-import requests
 
-from flask import Flask, Response
+import requests
 from applicationinsights.flask.ext import AppInsights
-from applicationinsights.channel import TelemetryChannel
+from flask import Flask, Response
 
 INSTRUMENTATION_KEY = '115fcb01-ff5c-42db-9b69-5e6ae017f9a7'
-
-# TelemetryChannel.context["ai.cloud.role"] = 'poulad-role'
 
 # instantiate the Flask application
 app = Flask(__name__)
@@ -19,9 +16,7 @@ app.config['APPINSIGHTS_INSTRUMENTATIONKEY'] = INSTRUMENTATION_KEY
 appinsights = AppInsights(app)
 appinsights.context.device.role_name = 'poulad-role'
 
-# appinsights.context['ai.cloud.role'] = 'poulad-role'
-# a: applicationinsights.channel.TelemetryContext
-#
+
 @app.route('/')
 def hello_world():
     logging.error('Testing error logging...')
