@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-
+import redis
 import requests
 from applicationinsights.flask.ext import AppInsights
 from flask import Flask, Response, request
@@ -67,6 +67,17 @@ def five_hundred():
 def throw_unhandled():
     app.logger.error("OH NO! Can't handle this...")
     raise Exception('blah')
+
+
+@app.route('/redis')
+def do_redis():
+    app.logger.error("Connecting to Redis instance...")
+    r = redis.Redis(host='rbc-devops-test-app.redis.cache.windows.net',
+                    password='LrhN7kuMUokdOaP8njaw9ctpRpWdLFhayDOUv25iSgs=',
+                    port=6379, db=0)
+    r.set('foobar', 'baz')
+    value = r.get('foobar')
+    return value
 
 
 # is PORT env var passed by the App Service?
