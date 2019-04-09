@@ -20,7 +20,7 @@ pipeline {
     JENKINS_SP_NAME = 'jenkins_sp'
     JENKINS_SP_PW = credentials('jenkins_sp_pw')
     RESOURCE_GROUP = 'weorg-dev'
-    WEBAPP_NAME = "rbc-devops-sample-dev3"
+    WEBAPP_NAME = "rbc-devops-sample-dev"
   }
 
   stages {
@@ -80,6 +80,39 @@ pipeline {
             """
             azureWebAppPublish([
                 appName: env.WEBAPP_NAME,
+                azureCredentialsId: env.JENKINS_SP_NAME,
+                dockerImageName: "${env.DOCKER_REGISTRY}/${env.DOCKER_REPO_NAME}",
+                dockerImageTag: env.BUILD_TAG,
+                dockerRegistryEndpoint: [
+                    credentialsId: 'platform-docker-registry',
+                    url: "https://${DOCKER_REGISTRY}"
+                ],
+                publishType: 'docker',
+                resourceGroup: env.RESOURCE_GROUP,
+                // slotName: env.SLOT,
+            ])
+        }
+      }
+    }
+    stage('Deploy Docker Image (Development3)') {
+      agent {
+        docker {
+          image 'microsoft/azure-cli'
+          args '-v $HOME/.jenkins/:/tmp'
+        }
+      }
+      steps {
+        script {
+            sh """
+            az login \
+                --service-principal \
+                -u http://$JENKINS_SP_NAME \
+                -p \"$JENKINS_SP_PW\" \
+                --verbose \
+                --tenant we.org
+            """
+            azureWebAppPublish([
+                appName: "${env.WEBAPP_NAME}3",
                 azureCredentialsId: env.JENKINS_SP_NAME,
                 dockerImageName: "${env.DOCKER_REGISTRY}/${env.DOCKER_REPO_NAME}",
                 dockerImageTag: env.BUILD_TAG,
