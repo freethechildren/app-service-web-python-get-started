@@ -46,7 +46,7 @@ def five_hundred():
 @app.route('/403')
 def four_oh_three():
     app.logger.warning('This guy is not authorized to access. WATCH HIM!')
-    return Response(status=401)
+    return Response(status=403)
 
 
 # is PORT env var passed by the App Service?
