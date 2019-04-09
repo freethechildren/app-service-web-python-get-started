@@ -1,3 +1,5 @@
+def app
+
 pipeline {
   agent {
     node {
@@ -11,16 +13,16 @@ pipeline {
     DOCKER_REGISTRY = 'wedockerregistrydev.azurecr.io'
     DOCKER_REGISTRY_NAME = 'WeDockerRegistryDev'
     DOCKER_REGISTRY_ADDR= "https://${DOCKER_REGISTRY}"
-    DOCKER_REPO_NAME='rbc-devops/sample-django'
+    DOCKER_REPO_NAME='rbc-devops/sample-flask'
     BUILD_TAG='latest'
     DOCKER_REGISTRY_CREDS = credentials('platform-docker-registry')
     DNS_NAME_LABEL = "rbc-devops-sample-dev"
     JENKINS_SP_NAME = 'jenkins_sp'
-
-    
-
+    JENKINS_SP_PW = credentials('jenkins_sp_pw')
     RESOURCE_GROUP = 'weorg-dev'
-    APP_NAME = "rbc-devops-sample-dev"
+    // APP_NAME = "rbc-devops-sample-dev"
+
+    WEBAPP_NAME = "rbc-devops-sample-dev"
   }
 
   stages {
@@ -32,7 +34,7 @@ pipeline {
         sh 'pwd'
       }
     }
-    stage('Build the container') {
+    stage('Build Docker Image') {
       steps {
         script {
           app = docker.build(env.DOCKER_REPO_NAME)
@@ -44,8 +46,6 @@ pipeline {
         script {
           app.inside {
             sh 'echo TESTS HERE...'
-            // sh 'flake8 .'
-            // sh 'pytest --tb=short --cov=./ tests/'
           }
         }
       }
@@ -63,61 +63,57 @@ pipeline {
         }
       }
     }
-    stage("Deploy container to chosen deploy") {
+    stage('Deploy Docker Image (Development)') {
       agent {
         docker {
           image 'microsoft/azure-cli'
           args '-v $HOME/.jenkins/:/tmp'
         }
       }
-      environment {
-        JENKINS_SP_PW = credentials('jenkins_sp_pw')
-
-        // env.MQ_HOST = "wetl-main-queue-dev.redis.cache.windows.net"
-        // env.MQ_PORT = '6380'
-        // env.MQ_DATABASE = '0'
-        // env.MQ_CREDS_ID = "wetl-main-queue-dev"
-        // SF_URL = 'https://we--danbox.cs62.my.salesforce.com'
-        // env.SF_CREDS_ID = "pyth_sf_danbox_creds"
-        // env.SF_TOKEN_ID = "pyth_sf_danbox_token"
-        // env.SF_DOMAIN = 'test'
-        // env.SENTRY_DSN = 'https://3d8842518bc74291840d42a501825f26@sentry.io/1404060'
-
-
-        // MQ_CREDS = credentials("${MQ_CREDS_ID}")
-        // SF_CREDS = credentials("${SF_CREDS_ID}")
-        // SF_TOKEN = credentials("${SF_TOKEN_ID}")
-      }
       steps {
         script {
-          sh """
-          az login \
-            --service-principal \
-            -u http://$JENKINS_SP_NAME \
-            -p \"$JENKINS_SP_PW\" \
-            --verbose \
-            --tenant we.org
-          """
-          sh """
-          az container create  \
-            -g ${RESOURCE_GROUP} \
-            --name ${APP_NAME} \
-            --image ${DOCKER_REGISTRY}/${DOCKER_REPO_NAME}:${BUILD_TAG} \
-            --registry-username ${DOCKER_REGISTRY_CREDS_USR} \
-            --registry-password "${DOCKER_REGISTRY_CREDS_PSW}" \
-            --ip-address public \
-            --ports 80 443 \
-            --log-analytics-workspace "e6a89dce-3b67-401b-9772-50f0b9e8242b" \
-            --log-analytics-workspace-key "ugZg2IzupA1xmiaoHthqfvN+9wsKlb+9RnwicMCfBntwU6Thf8XNgAGrM2uwJi//cO1JD7VQeNliN2v6cp/zEg==" \
-            --dns-name-label ${DNS_NAME_LABEL} \
-            --verbose
-          """
-          sh """
-          az container restart \
-            --verbose \
-            -g ${RESOURCE_GROUP} \
-            --name ${APP_NAME}
-          """
+            sh """
+            az login \
+                --service-principal \
+                -u http://$JENKINS_SP_NAME \
+                -p \"$JENKINS_SP_PW\" \
+                --verbose \
+                --tenant we.org
+            """
+            azureWebAppPublish([
+                appName: env.WEBAPP_NAME,
+                azureCredentialsId: env.JENKINS_SP_NAME,
+                dockerImageName: "${env.DOCKER_REGISTRY}/${env.DOCKER_REPO_NAME}",
+                dockerImageTag: env.BUILD_TAG,
+                dockerRegistryEndpoint: [
+                    credentialsId: 'platform-docker-registry',
+                    url: "https://${DOCKER_REGISTRY}"
+                ],
+                publishType: 'docker',
+                resourceGroup: env.RESOURCE_GROUP,
+                // slotName: env.SLOT,
+            ])
+
+            //   sh """
+            //   az container create  \
+            //     -g ${RESOURCE_GROUP} \
+            //     --name ${APP_NAME} \
+            //     --image ${DOCKER_REGISTRY}/${DOCKER_REPO_NAME}:${BUILD_TAG} \
+            //     --registry-username ${DOCKER_REGISTRY_CREDS_USR} \
+            //     --registry-password "${DOCKER_REGISTRY_CREDS_PSW}" \
+            //     --ip-address public \
+            //     --ports 80 443 \
+            //     --log-analytics-workspace "e6a89dce-3b67-401b-9772-50f0b9e8242b" \
+            //     --log-analytics-workspace-key "ugZg2IzupA1xmiaoHthqfvN+9wsKlb+9RnwicMCfBntwU6Thf8XNgAGrM2uwJi//cO1JD7VQeNliN2v6cp/zEg==" \
+            //     --dns-name-label ${DNS_NAME_LABEL} \
+            //     --verbose
+            //   """
+            //   sh """
+            //   az container restart \
+            //     --verbose \
+            //     -g ${RESOURCE_GROUP} \
+            //     --name ${APP_NAME}
+            //   """
         }
       }
     }
