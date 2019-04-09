@@ -25,7 +25,7 @@ def hello_world():
 @app.route('/snail')
 def slow():
     app.logger.warning('This API is sooooo slow!!!')
-    time.sleep(30)
+    time.sleep(40)
     app.logger.info('making an API request to ')
     return "I'm ALIVE!"
 
