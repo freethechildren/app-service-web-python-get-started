@@ -37,6 +37,14 @@ def dad_joke():
     return response.content
 
 
+@app.route('/dad-joke-internal')
+def dad_joke_internal():
+    other_service_url = "https://rbc-devops-sample-dev.azurewebsites.net/dad-joke"
+    app.logger.info('Calling the other service')
+    response = requests.get(other_service_url)
+    return response.content
+
+
 @app.route('/403')
 def four_oh_three():
     app.logger.warning('This guy is not authorized to access. WATCH HIM!')
