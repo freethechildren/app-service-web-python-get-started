@@ -5,6 +5,18 @@ import requests
 
 from flask import Flask, Response
 
+from applicationinsights.logging import enable
+
+INSTRUMENTATION_KEY = '115fcb01-ff5c-42db-9b69-5e6ae017f9a7'
+# set up logging
+enable(INSTRUMENTATION_KEY)
+
+# log something (this will be sent to the Application Insights service as a trace)
+logging.info('This is a message')
+
+# logging shutdown will cause a flush of all un-sent telemetry items
+logging.shutdown()
+
 app = Flask(__name__)
 
 

@@ -20,8 +20,6 @@ pipeline {
     JENKINS_SP_NAME = 'jenkins_sp'
     JENKINS_SP_PW = credentials('jenkins_sp_pw')
     RESOURCE_GROUP = 'weorg-dev'
-    // APP_NAME = "rbc-devops-sample-dev"
-
     WEBAPP_NAME = "rbc-devops-sample-dev3"
   }
 
