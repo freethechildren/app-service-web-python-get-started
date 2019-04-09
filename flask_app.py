@@ -4,7 +4,7 @@ import time
 
 import requests
 from applicationinsights.flask.ext import AppInsights
-from flask import Flask, Response
+from flask import Flask, Response, request
 
 INSTRUMENTATION_KEY = '115fcb01-ff5c-42db-9b69-5e6ae017f9a7'
 
@@ -14,7 +14,12 @@ app.config['APPINSIGHTS_INSTRUMENTATIONKEY'] = INSTRUMENTATION_KEY
 
 # log requests, traces and exceptions to the Application Insights service
 appinsights = AppInsights(app)
-appinsights.context.device.role_name = 'poulad-role'
+# appinsights.context.device.role_name = 'poulad-role'
+
+role_name = os.getenv('APPINSIGHTS_ROLE_NAME', 'rbc-devops-sample-dev')
+role_instance = os.getenv('APPINSIGHTS_ROLE_INSTANCE', 'foobar')
+appinsights.context.cloud.role = role_name
+appinsights.context.cloud.role_instance = role_instance
 
 
 @app.route('/')
