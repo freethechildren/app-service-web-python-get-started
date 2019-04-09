@@ -22,7 +22,7 @@ pipeline {
     RESOURCE_GROUP = 'weorg-dev'
     // APP_NAME = "rbc-devops-sample-dev"
 
-    WEBAPP_NAME = "rbc-devops-sample-dev"
+    WEBAPP_NAME = "rbc-devops-sample-dev2"
   }
 
   stages {
