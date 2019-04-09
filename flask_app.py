@@ -17,7 +17,7 @@ def hello_world():
 @app.route('/snail')
 def slow():
     logging.warning('This API is sooooo slow!!!')
-    time.sleep(5)
+    time.sleep(30)
     logging.info('making an API request to ')
     return "I'm ALIVE!"
 
@@ -36,7 +36,7 @@ def five_hundred():
 
 
 @app.route('/403')
-def four_oh_one():
+def four_oh_three():
     logging.warning('This guy is not authorized to access. WATCH HIM!')
     return Response(status=401)
 
