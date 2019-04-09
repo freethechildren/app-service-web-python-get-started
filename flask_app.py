@@ -25,7 +25,7 @@ def slow():
 @app.route('/dad-joke')
 def dad_joke():
     logging.debug('making a request to the Dad Jokes API')
-    response = requests.get('https://icanhazdadjoke.com')
+    response = requests.get('https://icanhazdadjoke.com', headers={"Accept": "text/plain"})
     return response.content
 
 
