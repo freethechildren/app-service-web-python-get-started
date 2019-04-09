@@ -93,27 +93,6 @@ pipeline {
                 resourceGroup: env.RESOURCE_GROUP,
                 // slotName: env.SLOT,
             ])
-
-            //   sh """
-            //   az container create  \
-            //     -g ${RESOURCE_GROUP} \
-            //     --name ${APP_NAME} \
-            //     --image ${DOCKER_REGISTRY}/${DOCKER_REPO_NAME}:${BUILD_TAG} \
-            //     --registry-username ${DOCKER_REGISTRY_CREDS_USR} \
-            //     --registry-password "${DOCKER_REGISTRY_CREDS_PSW}" \
-            //     --ip-address public \
-            //     --ports 80 443 \
-            //     --log-analytics-workspace "e6a89dce-3b67-401b-9772-50f0b9e8242b" \
-            //     --log-analytics-workspace-key "ugZg2IzupA1xmiaoHthqfvN+9wsKlb+9RnwicMCfBntwU6Thf8XNgAGrM2uwJi//cO1JD7VQeNliN2v6cp/zEg==" \
-            //     --dns-name-label ${DNS_NAME_LABEL} \
-            //     --verbose
-            //   """
-            //   sh """
-            //   az container restart \
-            //     --verbose \
-            //     -g ${RESOURCE_GROUP} \
-            //     --name ${APP_NAME}
-            //   """
         }
       }
     }
