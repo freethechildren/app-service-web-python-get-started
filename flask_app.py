@@ -37,16 +37,22 @@ def dad_joke():
     return response.content
 
 
+@app.route('/403')
+def four_oh_three():
+    app.logger.warning('This guy is not authorized to access. WATCH HIM!')
+    return Response(status=403)
+
+
 @app.route('/500')
 def five_hundred():
     app.logger.error('Oops! Something went wrong :)')
     return Response(status=500)
 
 
-@app.route('/403')
-def four_oh_three():
-    app.logger.warning('This guy is not authorized to access. WATCH HIM!')
-    return Response(status=403)
+@app.route('/throw')
+def throw_unhandled():
+    app.logger.error("OH NO! Can't handle this...")
+    raise Exception('blah')
 
 
 # is PORT env var passed by the App Service?
