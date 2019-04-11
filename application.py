@@ -5,7 +5,7 @@ import time
 import redis
 import requests
 from applicationinsights.flask.ext import AppInsights
-from flask import Flask, Response, request
+from flask import Flask, Response, request, jsonify
 
 INSTRUMENTATION_KEY = '115fcb01-ff5c-42db-9b69-5e6ae017f9a7'
 
@@ -38,6 +38,9 @@ def slow():
 
 @app.route('/dad-joke')
 def dad_joke():
+    print(request.headers)
+    h = str(request.headers)
+    app.logger.warning(f'Logging request headers {h}.')
     request_id = request.headers.get('Request-Id', 'NO-REQUEST-ID')
     app.logger.warning(f'Current request ID is {request_id}.')
 
@@ -48,6 +51,7 @@ def dad_joke():
 
 @app.route('/dad-joke-internal')
 def dad_joke_internal():
+    app.logger.warning('Logging request headers.', headers=request.headers)
     request_id = request.headers.get('Request-Id', 'NO-REQUEST-ID')
     app.logger.warning(f'Current request ID is {request_id}.')
 
