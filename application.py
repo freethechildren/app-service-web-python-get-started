@@ -9,7 +9,6 @@ from flask import Flask, Response, request
 
 INSTRUMENTATION_KEY = '115fcb01-ff5c-42db-9b69-5e6ae017f9a7'
 
-# instantiate the Flask application
 app = Flask(__name__)
 app.config['APPINSIGHTS_INSTRUMENTATIONKEY'] = INSTRUMENTATION_KEY
 
