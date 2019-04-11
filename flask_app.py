@@ -80,10 +80,5 @@ def do_redis():
     return value
 
 
-@app.route('/env')
-def handle_env():
-    return str(os.environ)
-
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=PORT)
