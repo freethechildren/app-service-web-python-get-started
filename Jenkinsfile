@@ -13,7 +13,7 @@ pipeline {
     DOCKER_REGISTRY = 'wedockerregistrydev.azurecr.io'
     DOCKER_REGISTRY_NAME = 'WeDockerRegistryDev'
     DOCKER_REGISTRY_ADDR= "https://${DOCKER_REGISTRY}"
-    DOCKER_REPO_NAME='rbc-devops/sample-flask'
+    DOCKER_REPO_NAME='rbc-devops/rbc-flask'
     BUILD_TAG='latest'
     DOCKER_REGISTRY_CREDS = credentials('platform-docker-registry')
     DNS_NAME_LABEL = "rbc-devops-sample-dev"

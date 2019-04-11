@@ -1,23 +1,23 @@
 import logging
 import os
 import time
-
+import redis
 import requests
+import json
 from applicationinsights.flask.ext import AppInsights
 from flask import Flask, Response, request
 
-INSTRUMENTATION_KEY = '115fcb01-ff5c-42db-9b69-5e6ae017f9a7'
 
-# instantiate the Flask application
-app = Flask(__name__)
-app.config['APPINSIGHTS_INSTRUMENTATIONKEY'] = INSTRUMENTATION_KEY
+PORT = os.getenv('PORT', 80)
+role_key = os.getenv('APPINSIGHTS_INSTRUMENTATIONKEY', '')
+role_name = os.getenv('APPINSIGHTS_ROLE_NAME', '')
+role_instance = os.getenv('APPINSIGHTS_ROLE_INSTANCE', '')
+
 
 # log requests, traces and exceptions to the Application Insights service
+app = Flask(__name__)
+app.config['APPINSIGHTS_INSTRUMENTATIONKEY'] = role_key
 appinsights = AppInsights(app)
-# appinsights.context.device.role_name = 'poulad-role'
-
-role_name = os.getenv('APPINSIGHTS_ROLE_NAME', 'rbc-devops-sample-dev')
-role_instance = os.getenv('APPINSIGHTS_ROLE_INSTANCE', 'foobar')
 appinsights.context.cloud.role = role_name
 appinsights.context.cloud.role_instance = role_instance
 
@@ -69,7 +69,21 @@ def throw_unhandled():
     raise Exception('blah')
 
 
-# is PORT env var passed by the App Service?
-PORT = os.getenv('PORT', 80)
+@app.route('/redis')
+def do_redis():
+    app.logger.error("Connecting to Redis instance...")
+    r = redis.Redis(host='rbc-devops-test-app.redis.cache.windows.net',
+                    password='LrhN7kuMUokdOaP8njaw9ctpRpWdLFhayDOUv25iSgs=',
+                    port=6379, db=0)
+    r.set('foobar', 'baz')
+    value = r.get('foobar')
+    return value
+
+
+@app.route('/env')
+def handle_env():
+    return str(os.environ)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=PORT)
