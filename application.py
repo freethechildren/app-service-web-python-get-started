@@ -22,10 +22,12 @@ appinsights.context.cloud.role_instance = role_instance
 
 
 @app.route('/')
-def hello_world():
+def index():
     app.logger.warning(f'Logging request headers:\n{str(request.headers)}.')
-
     logging.error('Testing error logging...')
+    if 'APPINSIGHTS_ROLE_NAME' in os.environ:
+        logging.warning('Delaying the HTTP response for a while 🐌!')
+        time.sleep(40)
     return 'Hello, World!'
 
 
@@ -40,7 +42,6 @@ def slow():
 @app.route('/dad-joke')
 def dad_joke():
     app.logger.warning(f'Logging request headers:\n{str(request.headers)}.')
-
     request_id = request.headers.get('Request-Id', 'NO-REQUEST-ID')
     app.logger.warning(f'Current request ID is {request_id}.')
 
