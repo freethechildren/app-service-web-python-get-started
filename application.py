@@ -38,6 +38,9 @@ def slow():
 
 @app.route('/dad-joke')
 def dad_joke():
+    request_id = request.headers.get('Request-Id', 'NO-REQUEST-ID')
+    app.logger.warning(f'Current request ID is {request_id}.')
+
     app.logger.debug('making a request to the Dad Jokes API')
     response = requests.get('https://icanhazdadjoke.com', headers={"Accept": "text/plain"})
     return response.content
@@ -46,9 +49,10 @@ def dad_joke():
 @app.route('/dad-joke-internal')
 def dad_joke_internal():
     request_id = request.headers.get('Request-Id', 'NO-REQUEST-ID')
+    app.logger.warning(f'Current request ID is {request_id}.')
+
     other_service_url = "https://rbc-devops-sample-dev.azurewebsites.net/dad-joke"
     app.logger.info('Calling the other service')
-    app.logger.warning(f'Current request ID is {request_id}.')
     response = requests.get(
         other_service_url,
         headers={
