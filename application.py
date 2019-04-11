@@ -5,7 +5,7 @@ import time
 import redis
 import requests
 from applicationinsights.flask.ext import AppInsights
-from flask import Flask, Response, request, jsonify
+from flask import Flask, Response, request
 
 INSTRUMENTATION_KEY = '115fcb01-ff5c-42db-9b69-5e6ae017f9a7'
 
@@ -24,6 +24,8 @@ appinsights.context.cloud.role_instance = role_instance
 
 @app.route('/')
 def hello_world():
+    app.logger.warning(f'Logging request headers:\n{str(request.headers)}.')
+
     logging.error('Testing error logging...')
     return 'Hello, World!'
 
@@ -38,9 +40,8 @@ def slow():
 
 @app.route('/dad-joke')
 def dad_joke():
-    print(request.headers)
-    h = str(request.headers)
-    app.logger.warning(f'Logging request headers {h}.')
+    app.logger.warning(f'Logging request headers:\n{str(request.headers)}.')
+
     request_id = request.headers.get('Request-Id', 'NO-REQUEST-ID')
     app.logger.warning(f'Current request ID is {request_id}.')
 
@@ -51,7 +52,8 @@ def dad_joke():
 
 @app.route('/dad-joke-internal')
 def dad_joke_internal():
-    app.logger.warning('Logging request headers.', headers=request.headers)
+    app.logger.warning(f'Logging request headers:\n{str(request.headers)}.')
+
     request_id = request.headers.get('Request-Id', 'NO-REQUEST-ID')
     app.logger.warning(f'Current request ID is {request_id}.')
 
@@ -96,7 +98,6 @@ def do_redis():
     return value
 
 
-# is PORT env var passed by the App Service?
 PORT = os.getenv('PORT', 80)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=PORT)
