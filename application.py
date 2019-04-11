@@ -53,7 +53,7 @@ def dad_joke():
 def dad_joke_internal():
     app.logger.warning(f'Logging request headers:\n{str(request.headers)}.')
 
-    request_id = request.headers.get('Request-Id', 'NO-REQUEST-ID')
+    request_id = request.headers.get('X-ARR-LOG-ID', 'NO-REQUEST-ID')
     app.logger.warning(f'Current request ID is {request_id}.')
 
     other_service_url = "https://rbc-devops-sample-dev.azurewebsites.net/dad-joke"
@@ -61,8 +61,8 @@ def dad_joke_internal():
     response = requests.get(
         other_service_url,
         headers={
-            'Correlation-Context': f'operation_Id={request_id}',
-            'Request-Context': f'operation_Id={request_id}',
+            'Correlation-Context': f'Operation_Id={request_id}',
+            'MS-CorrelationId': f'Operation_Id={request_id}',
         }
     )
     return response.content
